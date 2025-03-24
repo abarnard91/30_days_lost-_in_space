@@ -53,6 +53,8 @@ void loop(){
 
         for (int i = 0; i < PIN_LENGTH; i++){
             button_character = heroKeypad.waitForKey();
+            tone(BUZZER_PIN, 440, 100);
+            current_pin[i] = button_character;
             Serial.print("*");
         }
         Serial.println("PIN successfully Changed!");        
