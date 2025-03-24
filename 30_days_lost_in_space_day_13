@@ -23,7 +23,7 @@ Keypad heroKeypad = Keypad(makeKeymap(BUTTONS), ROW_PINS, COL_PINS, ROWS, COLS);
 
 const byte BUZZER_PIN = 10;
 
-void Setup(){
+void setup(){
     pinMode(BUZZER_PIN, OUTPUT);
     Serial.begin(9600);
     delay(200);
@@ -46,14 +46,14 @@ void loop(){
   }
 
   if (button_character == '*') {
-    bool access_allowed = validatePin();
+    bool access_allowed = validatePIN();
     
     if (access_allowed) {
         Serial.println("Welcome, authorized user. Please enter a new PIN: ");
 
         for (int i = 0; i < PIN_LENGTH; i++){
             button_character = heroKeypad.waitForKey();
-            serial.print("*");
+            Serial.print("*");
         }
         Serial.println("PIN successfully Changed!");        
     } 
@@ -71,7 +71,7 @@ bool validatePIN(){
         char button_character = heroKeypad.waitForKey();
         tone(BUZZER_PIN, 800, 100);
         
-        if (currentpin[i] != button_character){
+        if (current_pin[i] != button_character){
             Serial.println();
             Serial.print("WRONG PIN DIGIT: ");
             Serial.println(button_character);
