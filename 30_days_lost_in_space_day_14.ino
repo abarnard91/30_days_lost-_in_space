@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include <Keypad.h>
 
-onst byte ROWS = 4;
+const byte ROWS = 4;
 const byte COLS = 4;
 
 const byte PIN_LENGTH = 4;
@@ -36,7 +36,7 @@ void setup(){
 
   pinMode(BUZZER_PIN, OUTPUT);
   Serial.begin(9600);
-  Serial.println("Press * to make a new password or press # to access the system.")
+  Serial.println("Press * to make a new password or press # to access the system.");
 
 }
 
@@ -57,7 +57,7 @@ void loop(){
 
   else if (button_character == '*') {
     giveInputFeedback();
-    bool access_allowed = validatePin();
+    bool access_allowed = validatePIN();
     
     if (access_allowed) {
         displayColor(128, 80, 0);
@@ -71,7 +71,7 @@ void loop(){
               displayColor(128, 80, 0); //amber color
             }
 
-            serial.print("*");
+            Serial.print("*");
         }
         Serial.println();
         Serial.println("PIN successfully Changed!");  
@@ -84,8 +84,8 @@ void loop(){
   }
   else{
     Serial.print(button_character);
-    Serial.println("This does nothing.")
-    Serial.println("Push # or * to log in or change your password.")
+    Serial.println("This does nothing.");
+    Serial.println("Push # or * to log in or change your password.");
   }
 
 }
@@ -102,7 +102,7 @@ bool validatePIN(){
     for (int i =0; i < PIN_LENGTH; i++){
         char button_character = heroKeypad.waitForKey();
         
-        if (currentpin[i] != button_character){
+        if (password[i] != button_character){
             giveErrorFeedback();
             Serial.println();
             Serial.print("WRONG PIN DIGIT: ");
@@ -125,7 +125,7 @@ void giveInputFeedback(){
   displayColor(0,0,0);
   tone(BUZZER_PIN, 880, 100);
   delay(200);
-  displayColor(0,0,128) //blue color
+  displayColor(0,0,128); //blue color
 }
 
 void giveSuccessFeedback(){
