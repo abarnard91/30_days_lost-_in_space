@@ -98,19 +98,24 @@ void displayColor(byte red_intensity, byte green_intensity, byte blue_intensity)
 
 bool validatePIN(){
     Serial.println("Enter PIN to continue.");
-    char entered_PIN[PIN_LENGTH]
+    bool switch = true;
+
     for (int i =0; i < PIN_LENGTH; i++){
-         entered_PIN[i] = heroKeypad.waitForKey();
-         Serial.print("*");
-         giveInputFeedback();     
+        char button_character = heroKeypad.waitForKey();
+        
+        if (password[i] != button_character){
+            switch = false;
+        }
+        if (i < (PIN_LENGTH - 1)){
+          giveInputFeedback();
+        }
+        Serial.print("*");
     }
-
     Serial.println();
-
-    if (password != entered_PIN){
-            giveErrorFeedback();
-            Serial.println("WRONG PIN");
-            return false;
+    if (switch == false){
+      giveErrorFeedback();
+      Serial.print("WRONG PIN ENTERED");
+      return false;
     }
 
     else{
