@@ -74,15 +74,13 @@ void loop() {
       Serial.println();
       Serial.println("PIN successfully Changed!");
       giveSuccessFeedback();
-    } else {
+    }
+    else {
       Serial.println("Access Denied! Cannot change PIN without the old or default.");
       Serial.println("\nPress * to enter new PIN or # to access the system.");
     }
-  } else {
-    Serial.print(button_character);
-    Serial.println("This does nothing.");
-    Serial.println("Push # or * to log in or change your password.");
-  }
+  } 
+  
 }
 
 void displayColor(byte red_intensity, byte green_intensity, byte blue_intensity) {
@@ -109,7 +107,7 @@ bool validatePIN() {
   Serial.println();
   if (goodPIN == false) {
     giveErrorFeedback();
-    Serial.print("WRONG PIN ENTERED");
+    Serial.println("WRONG PIN ENTERED");
     return false;
   }
 
@@ -136,10 +134,17 @@ void giveSuccessFeedback() {
 
 void giveErrorFeedback() {
   displayColor(0, 0, 0);
+
+  tone(BUZZER_PIN, 400, 200);
+  delay(200);
+
   tone(BUZZER_PIN, 300, 200);
   delay(200);
 
-  tone(BUZZER_PIN, 200, 500);
+  tone(BUZZER_PIN, 200, 200);
+  delay(200);
+
+  tone(BUZZER_PIN, 100, 500);
   delay(500);
   displayColor(128, 0, 0);  //red color
 }
