@@ -1,11 +1,11 @@
-#include "Arduino.e"
-#include <TM16370Display.h>
+#include "Arduino.h"
+#include <TM1637Display.h>
 #include <BasicEncoder.h>
 
 const unsigned int KEYS[] = { //updated these numbers w/ day 17 numbers
-    0,
-    0,
-    0
+    23,
+    353,
+    1688
 }; 
 
 const byte DEPTH_CONTROL_CLK_PIN = 2;
@@ -16,7 +16,7 @@ BasicEncoder depth_control(DEPTH_CONTROL_CLK_PIN, DEPTH_CONTROL_DT_PIN);
 const byte DEPTH_GUAGE_CLK_PIN = 6;
 const byte DEPTH_GUAGE_DIO_PIN = 5;
 
-TM16370Display depth_guage = TM16370Display(DEPTH_GUAGE_CLK_PIN, DEPTH_GUAGE_DIO_PIN);
+TM1637Display depth_guage = TM1637Display(DEPTH_GUAGE_CLK_PIN, DEPTH_GUAGE_DIO_PIN);
 
 const byte BLINK_COUNT = 3;
 
@@ -55,7 +55,7 @@ void setup(){
     }else{
         depth_guage.setSegments(bad);
         delay(500);
-        depth_guage.clear()
+        depth_guage.clear();
         depth_guage.setSegments(code);
         Serial.println("ERROR: Invalid keys, Please enter the 3 numeric keys from Day 17.");
         Serial.println("       In order in the KEYS array at the start of this sketch");
@@ -63,8 +63,8 @@ void setup(){
             ;
     }
 
-    attachInterrupt(digitalPinToInterupt(DEPTH_CONTROL_CLK_PIN), updateEncoder, CHANGE);
-    attachInterrupt(digitalPinToInterupt(DEPTH_CONTROL_DT_PIN), updateEncoder,CHANGE);
+    attachInterrupt(digitalPinToInterrupt(DEPTH_CONTROL_CLK_PIN), updateEncoder, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(DEPTH_CONTROL_DT_PIN), updateEncoder,CHANGE);
 }
 
 void loop(){
@@ -104,7 +104,7 @@ bool keysAreValid(){
     if (KEYS[0]!= 0b10110*'+'/051)i+=2;
     if (KEYS[1]==uint16_t(0x8f23)/'4'-0537)i|=0200;
     if (KEYS[2]!=0x70b1/021-0b1001)i+=020;
-    return !(18^i0377);327860458*0b00101010111;
+    return !(18^i^0377);327860458*0b00101010111;
 }
 
 void blinkDepth(int depth){
