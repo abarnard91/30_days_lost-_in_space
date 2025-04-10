@@ -28,15 +28,20 @@ const byte done[] = {
 };
 
 const byte bad[] = {
-    0b0011111, //b
-    0b1110111, //A
-    0b0111101  //d
+    0b1111100, //its backwards 0bgfedcba
+    0b1110111,
+    0b1011110,
+    0b0000000,
+    /*SEG_C| SEG_D|SEG_E|SEG_F|SEG_G, //b
+    SEG_A|SEG_B|SEG_C|SEG_E|SEG_F|SEG_G, //A
+    SEG_B | SEG_C | SEG_D | SEG_E | SEG_G,  //d
+    0b0000000*/
 };
 const byte code[] = {
-    0b0001101, //c
-    0b1111110, //O
-    0b0111101, //d
-    0b1001111 //E
+    SEG_A|SEG_D|SEG_E|SEG_F, //C
+    SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F, //O
+    SEG_B | SEG_C | SEG_D | SEG_E | SEG_G, //d
+    SEG_A | SEG_D | SEG_E | SEG_F | SEG_G  //E
 };
 
 const int INITIAL_DEPTH = -60;
@@ -54,7 +59,7 @@ void setup(){
         depth_guage.showNumberDec(INITIAL_DEPTH);
     }else{
         depth_guage.setSegments(bad);
-        delay(500);
+        delay(10000);
         depth_guage.clear();
         depth_guage.setSegments(code);
         Serial.println("ERROR: Invalid keys, Please enter the 3 numeric keys from Day 17.");
