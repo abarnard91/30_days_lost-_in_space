@@ -91,7 +91,7 @@ void loop(){
             blinkDepth(current_depth);
         }
         if (current_depth >= SURFACE_DEPTH){
-            for(int i; i < BLINK_COUNT; i++){
+            for(int i = 0; i < BLINK_COUNT; i++){
                 depth_guage.clear();
                 delay(300);
                 depth_guage.setSegments(done);
