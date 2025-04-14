@@ -1,7 +1,8 @@
+
 //RGB color selector with Rotery Encoder, key pad and RGB LED
 #include "Arduino.h"
 #include <Keypad.h>
-#include <BasicEncoder>
+#include <BasicEncoder.h>
 
 const byte ROW_PIN = 4;
 
@@ -20,6 +21,8 @@ const byte COLOR_CTRL_DT_PIN = 3;
 
 BasicEncoder color_dial(COLOR_CTRL_CLK_PIN, COLOR_CTRL_DT_PIN);
 
+//const int STARTING_COLOR = 0;
+
 void setup(){
     pinMode(RED_PIN, OUTPUT);
     pinMode(BLUE_PIN, OUTPUT);
@@ -27,12 +30,12 @@ void setup(){
 
     displayColor(255,255,255); //Start with bright white to know everything is working
 
-    attachInterrupt(digitalPinToInterrupt(COLOR_CTRL_CLK_PIN_CLK_PIN), updateEncoder, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(COLOR_CTRL_CLK_PIN), updateEncoder, CHANGE);
     attachInterrupt(digitalPinToInterrupt(COLOR_CTRL_DT_PIN), updateEncoder,CHANGE);
 }
 
 void loop(){
-    current_button = rgb_keypad.getKey();
+    char current_button = rgb_keypad.getKey();
     if (current_button == 'R'){
         button_press(RED_PIN);
     }
@@ -55,16 +58,19 @@ void displayColor(byte red_intensity, byte green_intensity, byte blue_intensity)
   analogWrite(BLUE_PIN, blue_intensity);
 }
 
-void button_press(color_pin){
+void button_press(byte color_pin){
     int color_level = 0;
     
-    if color_dial.get_change(){
+    if (color_dial.get_change()){
         color_level += color_dial.get_count();
-        if (starting_color < 0){
-            starting_color = 0;
+        if (color_level < 0){
+            color_level = 0;
             color_dial.reset();
         }
         analogWrite(color_pin, color_level);   
     }
 }
 
+void updateEncoder(){
+    color_dial.service();
+}
