@@ -21,9 +21,10 @@ const byte done[] = {
     SEG_A | SEG_D | SEG_E | SEG_F | SEG_G  //E //0b1001111
 };
 
+
 void setup(){
     clock_face.setBrightness(7);
-    pinMode(DIAL_SW_PIN, INPUT);
+    pinMode(DIAL_SW_PIN, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(DIAL_CLK_PIN), updateEncoder, CHANGE);
     attachInterrupt(digitalPinToInterrupt(DIAL_DT_PIN), updateEncoder, CHANGE);
     bool blink_12 = true;
@@ -33,20 +34,56 @@ void setup(){
         clock_face.clear();
         delay(500);
         
-        if (dial.get_change()){
+        if (dial.get_change()|| digitalRead(DIAL_SW_PIN) == LOW){
             blink_12 = false;
             clock_face.setSegments(done);
-            delay(10000);
+            delay(100);
         }
     }
     
 }
 
 void loop(){
-    
-   
+    //set up switch to set time, set alarm, show time
+    static int hrs = 1200;
+    static int mins = 00;
+    static int switch_num = 0;
+    int set_time = hrs + mins;
+    if(digitalRead(DIAL_SW_PIN) == LOW){
+    switch_num += 1;
+    if (switch_num > 3){
+        switch_num = 0;
+    }
+   }
+    if (switch_num == 0){ //set time
+        if (dial.get_change){
+            mins += dial.get_count();
+            if (mins > 59){
+                mins = 0;
+                hrs += 100;
+                if (hrs > 2300) {
+                    hrs = 0;
+                }
+            }
+            if (mins < 0) {
+                mins = 59;
+                hrs -= 100;
+                if (hrs < 0) {
+                    hrs = 2300;
+                }
+            }
+        }
 
+   }
+    else if( switch_num == 1) { 
+
+   }
+    else {
+
+   }
+   
 }
 void updateEncoder(){
     dial.service();
 }
+
