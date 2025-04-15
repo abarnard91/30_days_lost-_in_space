@@ -11,7 +11,7 @@ const byte DIAL_CLK_PIN = 2;
 const byte DIAL_DT_PIN = 3;
 const byte DIAL_SW_PIN = 4;
  
-cosnt byte BUZZER_PIN = 10;
+const byte BUZZER_PIN = 10;
 
 BasicEncoder dial(DIAL_CLK_PIN, DIAL_DT_PIN);
 TM1637Display clock_face = TM1637Display(CLOCK_CLK_PIN, CLOCK_DIO_PIN);
@@ -33,8 +33,9 @@ const byte set[] = {
 static int switch_num = 0;
 static int hrs = 1200;
 static int mins = 00;
-static int a_mins = 00;
+static int a_mins = 05;
 static int a_hrs = 1200;
+static int alarm_time = a_hrs + a_mins;
 
 void setup(){
     clock_face.setBrightness(7);
@@ -71,7 +72,7 @@ void loop(){
     }
    }
     if (switch_num == 0){ //set time
-        if (dial.get_change){
+        if (dial.get_change()){
             mins += dial.get_count();
             if (mins > 59){
                 mins = 0;
@@ -133,9 +134,9 @@ void loop(){
             delay(100);
             display_alarm();
         }
-        int alarm_time = a_hrs + a_mins;
         
-        if (dial.get_change){
+        
+        if (dial.get_change()){
             a_mins += dial.get_count();
             if (a_mins > 59){
                 a_mins = 0;
