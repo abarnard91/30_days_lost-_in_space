@@ -31,10 +31,10 @@ const byte set[] = {
 };
 
 static int switch_num = 0;
-unsigned int hrs = 1200;
-long int mins = 0;
-long int a_mins = 5;
-unsigned int a_hrs = 1200;
+short int hrs = 1200;
+short int mins = 0;
+short int a_mins = 5;
+short int a_hrs = 1200;
 //unsigned int alarm_time = a_hrs + a_mins;
 //unsigned int set_time = hrs + mins;
 
@@ -69,8 +69,8 @@ void loop(){
     //static int switch_num = 0; 
     Serial.print("dial.get_count is ");
     Serial.println(dial.get_count());
-    unsigned int alarm_time = a_hrs + a_mins;
-    unsigned int set_time = hrs + mins;
+    short int alarm_time = a_hrs + a_mins;
+    short int set_time = hrs + mins;
     delay(100);
     //dial.reset();
     
