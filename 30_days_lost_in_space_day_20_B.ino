@@ -13,15 +13,6 @@ const byte DIAL_SW_PIN = 4;
  
 const byte BUZZER_PIN = 10;
 
-PCICR |= B00000100;
-PCMSK2 |= B00010000;
-
-ICR(PCINT2_vect){
- int switch_num = 0
- if (DIAL_SW_PIN == LOW){
-  
- }
-}
 
 BasicEncoder dial(DIAL_CLK_PIN, DIAL_DT_PIN);
 TM1637Display clock_face = TM1637Display(CLOCK_CLK_PIN, CLOCK_DIO_PIN);
@@ -54,7 +45,7 @@ void setup(){
     pinMode(BUZZER_PIN, OUTPUT);
     attachInterrupt(digitalPinToInterrupt(DIAL_CLK_PIN), updateEncoder, CHANGE);
     attachInterrupt(digitalPinToInterrupt(DIAL_DT_PIN), updateEncoder, CHANGE);
-    //attachInterrupt(digitalPinToInterrupt(DIAL_SW_PIN), updateEncoder, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(DIAL_SW_PIN), increase_switch_num(), CHANGE);
     Serial.begin(9600);
     bool blink_12 = true;
      while (blink_12) {
@@ -259,3 +250,6 @@ void display_alarm(){
     };
 }
 
+int increase_switch_num(){
+    switch_num += 1;
+}
