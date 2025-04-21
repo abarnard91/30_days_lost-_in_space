@@ -39,6 +39,9 @@ short int a_hrs = 1200;
 //unsigned int alarm_time = a_hrs + a_mins;
 //unsigned int set_time = hrs + mins;
 
+const short TIMER_INVERVAL = 60000;
+short int last_millis = 0;
+
 void setup(){
     clock_face.setBrightness(7);
     pinMode(DIAL_SW_PIN, INPUT_PULLUP);
@@ -59,7 +62,7 @@ void setup(){
             clock_face.setSegments(done);
             delay(100);
         }
-    }
+     }
     
 }
 
@@ -72,9 +75,8 @@ void loop(){
     Serial.println(dial.get_count());
     short int alarm_time = a_hrs + a_mins;
     short int set_time = hrs + mins;
-    delay(100);
-    //dial.reset();
-    
+    short int current_millis = millis();
+ 
     if (switch_num == 0){ //set time
         Serial.println(switch_num);
         
@@ -118,16 +120,18 @@ void loop(){
             switch_num += 1;
         }
         clock_face.showNumberDecEx(set_time,0b01000000, true);
-        //delay(60000); //1 minute == 60,000 miliseconds
-        mins += 1;
-        if (mins > 59){
-                mins = 0;
-                hrs += 100;
-                if (hrs > 2300) {
-                    hrs = 0;
-                }
-            }
-        
+       if (current_millis-last_millis >= TIMER_INTERVAL){
+          last_millis = current_millis;
+          mins += 1;
+          if (mins > 59){
+                  mins = 0;
+                  hrs += 100;
+                  if (hrs > 2300) {
+                      hrs = 0;
+                  }
+              }
+        }
+          
         if (set_time == alarm_time){ //alarm goes off when set time matches the set alarm time and clock flashes 4 times
             for (int i = 0; i < 4; i++){
                 tone(BUZZER_PIN, 110,100);
