@@ -39,7 +39,7 @@ short int a_hrs = 1200;
 //unsigned int alarm_time = a_hrs + a_mins;
 //unsigned int set_time = hrs + mins;
 
-const short TIMER_INVERVAL = 60000;
+const unsigned int TIMER_INTERVAL = 60000;
 short int last_millis = 0;
 
 void setup(){
@@ -48,7 +48,10 @@ void setup(){
     pinMode(BUZZER_PIN, OUTPUT);
     attachInterrupt(digitalPinToInterrupt(DIAL_CLK_PIN), updateEncoder, CHANGE);
     attachInterrupt(digitalPinToInterrupt(DIAL_DT_PIN), updateEncoder, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(DIAL_SW_PIN), increase_switch_num(), CHANGE);
+    //attachInterrupt(digitalPinToInterrupt(DIAL_SW_PIN), increase_switch_num(), CHANGE);
+
+    PCICR |= B00000100;
+    PCMSK2 |= B00010000;
     Serial.begin(9600);
     bool blink_12 = true;
      while (blink_12) {
@@ -62,7 +65,7 @@ void setup(){
             clock_face.setSegments(done);
             delay(100);
         }
-     }
+    }
     
 }
 
@@ -75,8 +78,9 @@ void loop(){
     Serial.println(dial.get_count());
     short int alarm_time = a_hrs + a_mins;
     short int set_time = hrs + mins;
-    short int current_millis = millis();
- 
+    delay(100);
+    //dial.reset();
+    
     if (switch_num == 0){ //set time
         Serial.println(switch_num);
         
@@ -106,32 +110,33 @@ void loop(){
         delay(100);
         //clock_face.clear();
         //delay(500);
-        if(digitalRead(DIAL_SW_PIN) == LOW){
+        /*if(digitalRead(DIAL_SW_PIN) == LOW){
             delay(100);
             switch_num += 1;
-        }
+        }*/
 
    }
     else if( switch_num == 1) { //show time
         Serial.println(switch_num);
          
-        if(digitalRead(DIAL_SW_PIN) == LOW){
-            delay(100);
-            switch_num += 1;
-        }
+        
         clock_face.showNumberDecEx(set_time,0b01000000, true);
-       if (current_millis-last_millis >= TIMER_INTERVAL){
-          last_millis = current_millis;
-          mins += 1;
-          if (mins > 59){
-                  mins = 0;
-                  hrs += 100;
-                  if (hrs > 2300) {
-                      hrs = 0;
-                  }
-              }
+        short current_millis = millis();
+        Serial.print("current_millis is ");
+        Serial.println(current_millis - last_millis);
+        if (current_millis-last_millis >= TIMER_INTERVAL){
+            last_millis = current_millis;
+            
+            mins += 1;
+            if (mins > 59){
+                mins = 0;
+                hrs += 100;
+                if (hrs > 2300) {
+                    hrs = 0;
+                }
+            }
         }
-          
+        
         if (set_time == alarm_time){ //alarm goes off when set time matches the set alarm time and clock flashes 4 times
             for (int i = 0; i < 4; i++){
                 tone(BUZZER_PIN, 110,100);
@@ -253,7 +258,11 @@ void display_alarm(){
         delay(50);
     };
 }
-
-int increase_switch_num(){
+ISR (PCINT2_vect){
+    if (digitalRead(DIAL_SW_PIN) == LOW){
     switch_num += 1;
+        if (switch_num >2){
+            switch_num = 0;
+        }
+    }
 }
