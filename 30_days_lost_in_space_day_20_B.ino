@@ -36,6 +36,7 @@ short int hrs = 1200;
 short int mins = 0;
 short int a_mins = 5;
 short int a_hrs = 1200;
+short int btn_count = 0;
 //unsigned int alarm_time = a_hrs + a_mins;
 //unsigned int set_time = hrs + mins;
 
@@ -110,12 +111,13 @@ void loop(){
         delay(100);
         //clock_face.clear();
         //delay(500);
-        /*if(digitalRead(DIAL_SW_PIN) == LOW){
+        if(digitalRead(DIAL_SW_PIN) == LOW){
             delay(100);
             switch_num += 1;
-        }*/
+            btn_count +=1;
+        }
 
-   }
+    }
     else if( switch_num == 1) { //show time
         Serial.println(switch_num);
          
@@ -146,45 +148,52 @@ void loop(){
                 delay(100);
             }
         }
+        if (digitalRead(DIAL_SW_PIN) == LOW){
+            switch_num += 1;
+            btn_count += 1;
+        }
 
        
-   }
+    }
     else { //set alarm
         Serial.println(switch_num);
-        if(digitalRead(DIAL_SW_PIN) == LOW){
-            delay(100);
-            switch_num = 0;
-        }
-       
+
         clock_face.setSegments(set);
-        delay(1000);
+        delay(500);
         clock_face.clear();
         display_alarm();
         clock_face.clear();
-        delay(1000);
-        
-        if (dial.get_change()){
-            a_mins += dial.get_count();
-            if (a_mins > 59){
-                a_mins = 0;
-                a_hrs += 100;
-                if (a_hrs > 2300) {
-                    a_hrs = 0;
+        delay(250);
+
+        while((btn_count % 2) == 0){
+            if (dial.get_change()){
+                a_mins += dial.get_count();
+                if (a_mins > 59){
+                    a_mins = 0;
+                    a_hrs += 100;
+                    if (a_hrs > 2300) {
+                        a_hrs = 0;
+                    }
+                }
+                if (a_mins < 0) {
+                    a_mins = 59;
+                    a_hrs -= 100;
+                    if (a_hrs < 0) {
+                        a_hrs = 2300;
+                    }
                 }
             }
-            if (a_mins < 0) {
-                a_mins = 59;
-                a_hrs -= 100;
-                if (a_hrs < 0) {
-                    a_hrs = 2300;
-                }
+            clock_face.showNumberDecEx(alarm_time, 0b01000000, true); //flash the alarm time
+            delay(250);
+            clock_face.clear();
+            delay(250);
+
+            if(digitalRead(DIAL_SW_PIN) == LOW){
+            delay(100);
+            switch_num = 0;
+            btn_count += 1;
             }
         }
-        clock_face.showNumberDecEx(alarm_time, 0b01000000, true); //flash the alarm time
-        delay(500);
-        clock_face.clear();
-        delay(2000);
-        
         
     }
    
