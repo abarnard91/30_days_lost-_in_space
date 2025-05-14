@@ -36,8 +36,83 @@ void setup(){
     lander_display.setFont(u8g2_font_6x10_tr);
     lander_display.setFontRefHeightText();
     lander_display.setFontPosTop();
+
+    lander_display.firstPage();
+    do{
+        byte y_offset = drawString(0,0, "Exploration Lander");
+        drawString(0, y_offset, "Litoff Sequence");
+        
+        drawString(0, lander_display.getDisplayHeight() - lander_display.getMeaxCharHeight(), "Countdown Active");
+        displayLander(lander_display.getDisplayWidth() - LANDER_WIDTH, lander_display.getDisplayHeight - LANDER_HEIGHT);
+    } while (lander_display.nextPage());
+
+    for (int i = 0; i < 4; i++;){
+        counter_display.clear();
+        delay(200);
+        displayCounter(COUNTDOWN_MILLISECONDS);
+        delay(200);
+    }
+    Serial.println("Countdown started...: ");
 }
 
 void loop(){
+    static unsigned long timeRemaining = COUNTDOWN_MILLISECONDS;
+    static unsigned long countdown_start_time =millis();
 
+    Serial.println(timeRemaining);
+    displayCounter(timeRemaining);
+
+    if (timeRemaining == 0){
+        Serial.println("Done");
+        counter_display.setSegment(done);
+
+        lander_display.firstPage();
+        do{
+            byte y_offset = drawString(0,0, "Exploration Lander");
+            y_offset = drawString(0, y_offset, "Liftoff ABORTED");
+
+            y_offset = lander_display.getDisplayHeight() - (4 * lander_display.getMeaxCharHeight());
+            y_offset = drawString(0,y_offset, "Thrusters: OFF");
+            y_offset = drawString(0, y_offset, "Systems: OFF");
+            y_offset = drawString(0, y_offset, "Confirm: OFF");
+            drawString(0, y_offset, "Countdown ABORT");
+
+            displayLander(lander_display.getDisplayWidth() - LANDER_WIDTH, lander_display.getDisplayHeight() - LANDER_HEIGHT);
+        } while (lander_display.nextPage());
+        
+        while (1)
+            ;
+    }
+    unsigned long elapsed_time = millis() - countdown_start_time;
+    if (elapsed_time < COUNTDOWN_MILLISECONDS){
+        timeRemaining = COUNTDOWN_MILLISECONDS - elapsed_time;
+    }else {
+        timeRemaining = 0;
+    }
+}
+
+void displayCounter(unsigned long milliseconds){
+    byte minutes = numberOfMinutes(milliseconds);
+    byte seconds = numberOfSeconds(milliseconds);
+
+    counter_display.showNumberDecEx(minutes, 0b01000000, true, 2, 0);
+    counter_display.showNumberDecEx(seconds, 0, true, 2, 2);
+}
+
+byte drawString(byte x, byte y, char *string){
+    lander_display.drawStr(x,y, string);
+    return (y + lander_display.getMeaxCharHeight());
+}
+
+void displayLander(byte x_location, byte y_location){
+    lander_display.drawFrame(x_location + 7, y_location, 6, 5); // ship top
+    lander_display.drawFrame(x_location + 5, y_location + 4, 10, 20); // ship center
+    lander_display.drawFrame(x_location, y_location + 6, 6, 16); // left pod
+    lander_display.drawFrame(x_location + 14, y_location + 6, 6, 16); // right pod
+    lander_display.drawTriangle(x_location + 2, y_location + 21,
+                              x_location, y_location + 25,
+                              x_location + 4, y_location + 25); // left nozzle
+    lander_display.drawTriangle(x_location + 18, y_location + 21,
+                              x_location + 15, y_location + 25,
+                              x_location + 20, y_location + 25); // right nozzle
 }
