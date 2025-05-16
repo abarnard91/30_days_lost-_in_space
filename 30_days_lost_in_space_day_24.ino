@@ -151,7 +151,71 @@ void updateLanderDisplay(enum LIFTOFF_STATE liftoff_state, bool thrust_lever, bo
             static byte x_left = ((lander_display.getDisplayWidth()-LANDER_WIDTH) / 2) - (text_width / 2);
             lander_display.drawStr(x_left, y_center, LIFTOFF_TEXT);
         }else if(liftoff_state == ABORT){
-            
+            const char ABORT_TEXT[] = "ABORTED!";
+            byte y_center = y_offset + ((lander_display.getDisplayHeight() - y_offset) / 2);
+            lander_display.setFontPosCenter();
+            static byte x_left = ((lander_display.getDisplayWidth() - LANDER_WIDTH) / 2) - (text_width / 2);
+            lander_display.drawStr(x_left, y_center, ABORT_TEXT);
+        }else{
+            y_offset = lander_display.getDisplayHeight() - (4* lander_display.getMaxCharHeight());
+            y_offset = drawString(0, y_offset, (String("Thrusters: ") + String(thrust_lever ? "ON" : "OFF")).c_str());
+            y_offset = drawString(0, y_offset, (String("Systems: ") + String(systems_lever ? "ON" : "OFF")).c_str());
+            y_offset = drawString(0, y_offset, (String("Confirm: ") + String(confirm_lever ? "ON" : "OFF")).c_str());
+
+            y_offset - lander_display.getDisplayHeight() - lander_display.getMaxCharHeight();
+            drawString(0, y_offset, (String("Countdown ") + liftofstateToString(liftoff_state)).c_str());
+        }
+        displayLander(lander_display.getDisplayWidth() - LANDER_WIDTH, lander_height);   
+    } while (lander_display.nextPage());
+    if (liftoff_state == LIFTOFF){
+        lander_height -= current_lander_speed;
+        if (lander_height < -LANDER_HEIGHT){
+            lander_height = lander_display.getDisplayHeight();
+        }
+        if(current_lander_speed < MAX_LANDER_SPEED){
+            current_lander_speed += 1;
         }
     }
+}
+
+String liftoffStateToString(enum LIFTOFF_STATE liftoff_state){
+    switch (liftoff_state){
+        case INIT:
+            return ("init");
+            break;
+        case PENDING:
+            return ("Pending");
+            break;
+        case COUNTDOWN:
+            return ("Active");
+            break;
+        case LIFTOFF:
+            return ("Complete");
+            break;
+        case ABORT:
+            return ("ABORT");
+            break;
+    }
+}
+
+void displayCounter(unsigned long milliseconds){
+    byte minutes = numberOfMinutes(milliseconds);
+    byte seconds = numberOfSeconds(milliseconds);
+
+    counter_display.showNumberDecEx(minutes, 0b01000000, true, 2, 0);
+    counter_display.showNumberDecEx(seconds, 0, true, 2, 2);
+}
+
+byte drawString(byte x, byte y, char *string){
+    lander_display.drawstr(x, y, string)
+    return (y + lander_display.getMaxCharHeight());
+}
+
+void displayLander(byte x_location, int y_location){
+    lander_display.drawFrame(x_location + 7, y_location, 6, 5);
+    lander_display.drawFrame(x_location + 5, y_location + 4, 10, 20);
+    lander_display.drawFrame(x_location, y_location + 6, 6, 16);
+    lander_display.drawFrame(x_location + 14, y_location + 6, 6, 16);
+    lander_display.drawTriangle(x_location + 2, y_location + 21, x_location, y_location + 25, x_location + 4, y_location + 25);
+    lander_display.drawTriangle(x_location + 18, y_location + 21, x_location + 15, y_location + 25, x_location + 20, y_location + 25);
 }
