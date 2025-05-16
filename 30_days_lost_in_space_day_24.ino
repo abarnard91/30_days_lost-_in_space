@@ -1,6 +1,6 @@
 #include "Arduino.h"
 #include <TM1637Display.h>
-#include <U8g2lib.>
+#include <U8g2lib.h>
 #include "Wire.h"
 
 #define numberOfMinutes(_milliseconds_) (((_milliseconds_ + 999) / 1000) / 60)
@@ -17,7 +17,7 @@ const byte CONFIRM_LEVER_PIN = 7;
 
 const byte BUZZER_PIN = 6;
 
-U8G2_SH106_128X64_NONAME_2_HW_I2C lander_display(U8G2_R0, /*reset=*/U8x8_PIN_NONE);
+U8G2_SH1106_128X64_NONAME_2_HW_I2C lander_display(U8G2_R0, /*reset=*/U8X8_PIN_NONE);
 
 const byte LANDER_HEIGHT = 25;
 const byte LANDER_WIDTH = 20;
@@ -86,7 +86,7 @@ void loop(){
         }
     }else if (liftoff_state == PENDING){
         if (thrust_lever && systems_lever && confirm_lever){
-            for (int i =0; i < 3, i++){
+            for (int i =0; i < 3; i++){
                 counter_display.clear();
                 delay(MIN_LOOP_TIME);
                 displayCounter(COUNTDOWN_MILLISECONDS);
@@ -124,7 +124,7 @@ void loop(){
         liftoff_state = INIT;
     }
 
-    unsigned loon loop_time = millis() - loop_start_time;
+    unsigned long loop_time = millis() - loop_start_time;
     if (loop_time < MIN_LOOP_TIME){
         delay(MIN_LOOP_TIME - loop_time);
     }
@@ -154,6 +154,7 @@ void updateLanderDisplay(enum LIFTOFF_STATE liftoff_state, bool thrust_lever, bo
             const char ABORT_TEXT[] = "ABORTED!";
             byte y_center = y_offset + ((lander_display.getDisplayHeight() - y_offset) / 2);
             lander_display.setFontPosCenter();
+            static byte text_width = lander_display.getStrWidth(ABORT_TEXT);
             static byte x_left = ((lander_display.getDisplayWidth() - LANDER_WIDTH) / 2) - (text_width / 2);
             lander_display.drawStr(x_left, y_center, ABORT_TEXT);
         }else{
@@ -163,7 +164,7 @@ void updateLanderDisplay(enum LIFTOFF_STATE liftoff_state, bool thrust_lever, bo
             y_offset = drawString(0, y_offset, (String("Confirm: ") + String(confirm_lever ? "ON" : "OFF")).c_str());
 
             y_offset - lander_display.getDisplayHeight() - lander_display.getMaxCharHeight();
-            drawString(0, y_offset, (String("Countdown ") + liftofstateToString(liftoff_state)).c_str());
+            drawString(0, y_offset, (String("Countdown ") + liftoffStateToString(liftoff_state)).c_str());
         }
         displayLander(lander_display.getDisplayWidth() - LANDER_WIDTH, lander_height);   
     } while (lander_display.nextPage());
@@ -207,7 +208,7 @@ void displayCounter(unsigned long milliseconds){
 }
 
 byte drawString(byte x, byte y, char *string){
-    lander_display.drawstr(x, y, string)
+    lander_display.drawStr(x, y, string);
     return (y + lander_display.getMaxCharHeight());
 }
 
