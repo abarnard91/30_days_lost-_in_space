@@ -134,9 +134,14 @@ void loop(){
 
 const byte MAX_LANDER_SPEED = 5;
 
-void updateLanderDisplay(enum LIFTOFF_STATE liftoff_state, bool thrust_lever, bool systems_lever,bool confirm_lever){
+void updateLanderDisplay(enum LIFTOFF_STATE liftoff_state,
+                            bool thrust_lever,
+                            bool systems_lever,
+                            bool confirm_lever){
     static int lander_height = lander_display.getDisplayHeight() - LANDER_HEIGHT;
     static byte current_lander_speed = 1;
+    
+    lander_display.firstPage();
 
     do { 
         lander_display.setFontPosTop();
